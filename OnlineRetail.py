@@ -29,7 +29,7 @@ sales_df.info()
 assert len(sales_df.index) + len(returns_df.index) == len(df.index)
 
 # generate summary statistics for the dataframe
-# print(f"\n{sales_df.describe()}")
+print(f"\n{sales_df.describe()}")
 # FINDINGS:
 # 1. There are negative quantities
 #       Upon visual inspection in excel, the descriptions for such entries
@@ -47,18 +47,18 @@ assert len(sales_df.index) + len(returns_df.index) == len(df.index)
 
 # CALCULATIONS
 
-# total revenue
+# total revenue: $10 Million
 rev = sales_df["Revenue"].sum(skipna=False)
 print(f"\nTotal revenue is: ${rev:,.2f}")
 
-# revenue per product
+# revenue per product: top performers only sold $1000 each, suggesting highly seasonal buying
 itemSales = sales_df.groupby(["StockCode", "Description"], as_index=False)["Revenue"].sum()
 itemSales["Revenue"] = itemSales["Revenue"].map("${:,.2f}".format)
 # TODO: Add percentage of total revenue col
 print(f"\nRevenue per Item:")
 print(f"\n{itemSales.sort_values(by="Revenue")}")
 
-# revenue per location
+# revenue per location: UK is main market
 locSales = sales_df.groupby(["Country"], as_index=False)["Revenue"].sum()
 locSales["Revenue"] = locSales["Revenue"].map("${:,.2f}".format)
 # TODO: Add percentage of total revenue col

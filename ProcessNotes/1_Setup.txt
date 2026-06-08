@@ -13,3 +13,7 @@ DAY 2 --- SUNDAY
 	 2. InvoiceDate is not the desired type. It is a string instead of a date
 	 3. Around 14k missing CustomerIDs... perhaps more problematic.
 	    - Because of the missing values, Python has converted ID field into float
+
+DAY 3 --- SUNDAY
+   - Realized the time-consuming reality of data cleaning
+   - Reflecting, perhaps I learned that when results are needed in a timely manner, sticking to technologies you know would be the wise route.
