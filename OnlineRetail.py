@@ -22,16 +22,15 @@ returns_df = df[df["InvoiceNo"].str.startswith("C")]  # dataframe to store cance
 
 # visually examine the table metadata to check everything looks okay
 # df.info()
-# sales_df.info()
+sales_df.info()
 # returns_df.info()
 
 # sanity check that the size of both subtables equals the size of the original
 assert len(sales_df.index) + len(returns_df.index) == len(df.index)
 
 # generate summary statistics for the dataframe
-print(sales_df.describe())
-
-# FINDINGS
+# print(f"\n{sales_df.describe()}")
+# FINDINGS:
 # 1. There are negative quantities
 #       Upon visual inspection in excel, the descriptions for such entries
 #       show that negative quanities are literally showing quantities out, 
@@ -44,3 +43,32 @@ print(sales_df.describe())
 #       Bad debt adjustment
 # 3. There are samples with Q = -1, StockCode = S, and "Cancelled" order status
 #       Since the customer is already in the door, perhaps this is a merchandising cost?
+
+
+# CALCULATIONS
+
+# total revenue
+rev = sales_df["Revenue"].sum(skipna=False)
+print(f"\nTotal revenue is: ${rev:,.2f}")
+
+# revenue per product
+itemSales = sales_df.groupby(["StockCode", "Description"], as_index=False)["Revenue"].sum()
+itemSales["Revenue"] = itemSales["Revenue"].map("${:,.2f}".format)
+# TODO: Add percentage of total revenue col
+print(f"\nRevenue per Item:")
+print(f"\n{itemSales.sort_values(by="Revenue")}")
+
+# revenue per location
+locSales = sales_df.groupby(["Country"], as_index=False)["Revenue"].sum()
+locSales["Revenue"] = locSales["Revenue"].map("${:,.2f}".format)
+# TODO: Add percentage of total revenue col
+print(f"\nRevenue per Item:")
+print(f"\n{locSales.sort_values(by="Revenue")}")
+
+# most popular products by location
+itemsByLoc = sales_df.groupby(["StockCode", "Description", "Country"], as_index=False)["Revenue"].sum()
+itemsByLoc["Revenue"] = itemsByLoc["Revenue"].map("${:,.2f}".format)
+print(f"\nRevenue by Item and Location:")
+print(f"\n{itemsByLoc.sort_values(by="Revenue")}")
+
+# limitation: cannot determine category...
