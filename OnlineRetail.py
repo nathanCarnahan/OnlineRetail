@@ -2,7 +2,6 @@ import pandas as pd
 
 # load csv file
 df = pd.read_csv("OnlineRetail.csv", encoding = "latin1")
-df.info()
 
 # convert to usable data types, handle customerless observations
 df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
@@ -13,14 +12,15 @@ df["CustomerID"] = (
    .str.replace(r"\.0$", "", regex=True) # remove ".0" appended to float-converted fields
 )
 
+# create a column for each order's revenue
+df["Revenue"] = df["Quantity"] * df["UnitPrice"]
+
+# in the dataset, cancelled orders are represented by invoiceNo's starting with "C..."
+sales_df   = df[~df["InvoiceNo"].str.startswith("C")] # dataframe to store all orders
+returns_df = df[df["InvoiceNo"].str.startswith("C")]  # dataframe to store cancelled orders
+
 df.info()
+sales_df.info()
+returns_df.info()
 
-# while addressing the missing customerIDs, I got an error while trying to convert them to integers
-# saying that one of the customers is called "C...". this should not be the case
-
-# get an array of indexes where customerID starts with C
-cIndexes = df['CustomerID'].str.startswith('C', na=False)
-print(df[cIndexes].head()) # print rows where customerID starts with C
-
-# there is no customerIDs that start with C...
-# assuming i made a typo in the code that initially generated the error
+assert len(sales_df.index) + len(returns_df.index) == len(df.index)
