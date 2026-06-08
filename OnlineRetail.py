@@ -15,12 +15,32 @@ df["CustomerID"] = (
 # create a column for each order's revenue
 df["Revenue"] = df["Quantity"] * df["UnitPrice"]
 
-# in the dataset, cancelled orders are represented by invoiceNo's starting with "C..."
+# I want to know revenue information, but the data contains P and Q values for cancelled orders.
+# In the dataset, cancelled orders are represented by invoiceNo's starting with "C..."
 sales_df   = df[~df["InvoiceNo"].str.startswith("C")] # dataframe to store all orders
 returns_df = df[df["InvoiceNo"].str.startswith("C")]  # dataframe to store cancelled orders
 
-df.info()
-sales_df.info()
-returns_df.info()
+# visually examine the table metadata to check everything looks okay
+# df.info()
+# sales_df.info()
+# returns_df.info()
 
+# sanity check that the size of both subtables equals the size of the original
 assert len(sales_df.index) + len(returns_df.index) == len(df.index)
+
+# generate summary statistics for the dataframe
+print(sales_df.describe())
+
+# FINDINGS
+# 1. There are negative quantities
+#       Upon visual inspection in excel, the descriptions for such entries
+#       show that negative quanities are literally showing quantities out, 
+#       for reasons like damaged goods or correcting inventory data entry errors.
+#          a. When damage:
+#                Q < 0, P = 0
+#          b. When cancelled order:
+#                Q < 0, P > 0
+# 2. There are two rows with negative prices, Q = 1
+#       Bad debt adjustment
+# 3. There are samples with Q = -1, StockCode = S, and "Cancelled" order status
+#       Since the customer is already in the door, perhaps this is a merchandising cost?
